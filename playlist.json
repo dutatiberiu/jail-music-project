@@ -1,0 +1,110 @@
+{
+  "albums": [
+    {
+      "name": "🎵 All Songs",
+      "id": "all"
+    },
+    {
+      "name": "Singles",
+      "id": "singles",
+      "folder": "",
+      "songs": [
+        "Folk T - Nu-i Lumina nicari.MP3"
+      ]
+    },
+    {
+      "name": "Maria Raducanu",
+      "id": "maria-raducanu",
+      "folder": "Maria Raducanu",
+      "songs": [
+        "Maria Raducanu - Cristina.mp3",
+        "Maria Raducanu - De la moară pân' la gară.mp3",
+        "Maria Raducanu - La Uite-O, Zau!.mp3",
+        "Maria Raducanu - Luică, luică.mp3",
+        "Maria Raducanu - Mândră floare-i norocul.mp3",
+        "Maria Raducanu - Meu Amore.mp3",
+        "Maria Raducanu - Minciună.mp3",
+        "Maria Raducanu - Nu sunt prost, dar nici deştept.mp3",
+        "Maria Raducanu - Pe dealul plăcintelor.mp3",
+        "Maria Raducanu - Stinge lampa.mp3",
+        "Maria Raducanu - Sus în poarta Raiului.mp3",
+        "Maria Raducanu - Trei Crai De La Răsărit.mp3",
+        "Maria Raducanu - Trei lămâi şi trei gutui.mp3"
+      ]
+    },
+    {
+      "name": "Ed Sheeran - ÷ (Divide)",
+      "id": "ed-divide",
+      "folder": "Ed Sheeran - ÷",
+      "songs": [
+        "01 - Eraser.mp3",
+        "02 - Castle on the Hill.mp3",
+        "03 - Dive.mp3",
+        "04 - Shape of You.mp3",
+        "05 - Perfect.mp3",
+        "06 - Galway Girl.mp3",
+        "07 - Happier.mp3",
+        "08 - New Man.mp3",
+        "09 - Hearts Don't Break Around Here.mp3",
+        "10 - What Do I Know.mp3",
+        "11 - How Would You Feel (Paean).mp3",
+        "12 - Supermarket Flowers.mp3",
+        "13 - Barcelona.mp3",
+        "14 - Bibia Be Ye Ye.mp3",
+        "15 - Nancy Mulligan.mp3",
+        "16 - Save Myself.mp3"
+      ]
+    },
+    {
+      "name": "Ed Sheeran - Subtract",
+      "id": "ed-subtract",
+      "folder": "Ed Sheeran - Subtract (Deluxe Edition) (CD-Rip) (2023) Mp3 320kbps [PMEDIA] ⭐️",
+      "songs": [
+        "01. Boat.mp3",
+        "02. Salt Water.mp3",
+        "03. Eyes Closed.mp3",
+        "04. Life Goes On.mp3",
+        "05. Dusty.mp3",
+        "06. End Of Youth.mp3",
+        "07. Colourblind.mp3",
+        "08. Curtain.mp3",
+        "09. Borderline.mp3",
+        "10. Spark.mp3",
+        "11. Vega.mp3",
+        "12. Sycamore.mp3",
+        "13. No Strings.mp3",
+        "14. The Hills Of Aberfeldy.mp3",
+        "15. Wildflowers.mp3",
+        "16. Stoned.mp3",
+        "17. Toughest.mp3",
+        "18. Moving.mp3"
+      ]
+    },
+    {
+      "name": "Chopin - Nocturnes (Rubinstein)",
+      "id": "chopin-nocturnes",
+      "folder": "Chopin - Nocturnes - Rubinstein",
+      "songs": [
+        "01 Nocturne No. 1 in B♭ minor, Op. 9 No. 1.flac",
+        "02 Nocturne No. 2 in E♭ major, Op. 9 No. 2.flac",
+        "03 Nocturne No. 3 in B major, Op. 9 No. 3.flac",
+        "04 Nocturne No. 4 in F major, Op. 15 No. 1.flac",
+        "05 Nocturne No. 5 in F♯ major, Op. 15 No. 2.flac",
+        "06 Nocturne No. 6 in G minor, Op. 15 No. 3.flac",
+        "07 Nocturne No. 7 in C♯ minor, Op. 27 No. 1.flac",
+        "08 Nocturne No. 8 in D♭ major, Op. 27 No. 2.flac",
+        "09 Nocturne No. 9 in B major, Op. 32 No. 1.flac",
+        "10 Nocturne No. 10 in A♭ major, Op. 32 No. 2.flac",
+        "11 Nocturne No. 11 in G minor, Op. 37 No. 1.flac",
+        "12 Nocturne No. 12 in G major, Op. 37 No. 2.flac",
+        "13 Nocturne No. 13 in C minor, Op. 48 No. 1.flac",
+        "14 Nocturne No. 14 in F♯ minor, Op. 48 No. 2.flac",
+        "15 Nocturne No. 15 in F minor, Op. 55 No. 1.flac",
+        "16 Nocturne No. 16 in E♭ major, Op. 55 No. 2.flac",
+        "17 Nocturne No. 17 in B major, Op. 62 No. 1.flac",
+        "18 Nocturne No. 18 in E major, Op. 62 No. 2.flac",
+        "19 Nocturne No. 19 in E minor, Op. 72 No. 1.flac"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+# Uncomment the line below if you DON'T want to commit MP3 files to GitHub
+# (useful if you have large files or want to keep music private)
+# mp3/*.mp3
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
