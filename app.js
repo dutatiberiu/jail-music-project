@@ -1,5 +1,6 @@
 // ===== GLOBAL STATE =====
 const state = {
+    baseUrl: '',
     albums: [],
     allSongs: [],
     currentAlbum: null,
@@ -105,23 +106,47 @@ async function loadPlaylist() {
     try {
         const response = await fetch('playlist.json');
         const data = await response.json();
-        state.albums = data.albums;
 
-        // Build all songs array
+        // Store baseUrl for R2 access
+        state.baseUrl = data.baseUrl;
+        state.albums = [];
         state.allSongs = [];
-        state.albums.forEach(album => {
-            if (album.id === 'all') return; // Skip "All Songs" album
 
-            const folder = album.folder || '';
-            album.songs.forEach((filename, songIndex) => {
-                state.allSongs.push({
-                    filename: filename,
-                    folder: folder,
-                    albumId: album.id,
-                    albumName: album.name,
-                    globalIndex: state.allSongs.length
+        // Build albums and songs from multi-user structure
+        data.users.forEach(user => {
+            user.artists.forEach(artist => {
+                artist.albums.forEach(album => {
+                    // Add album to flat albums array
+                    state.albums.push({
+                        id: album.id,
+                        name: `${artist.name} - ${album.name}`,
+                        path: album.path,
+                        songs: album.songs,
+                        artistName: artist.name
+                    });
+
+                    // Add songs to all songs array
+                    album.songs.forEach((filename) => {
+                        state.allSongs.push({
+                            filename: filename,
+                            path: album.path,
+                            albumId: album.id,
+                            albumName: album.name,
+                            artistName: artist.name,
+                            globalIndex: state.allSongs.length
+                        });
+                    });
                 });
             });
+        });
+
+        // Add "All Songs" option at the beginning
+        state.albums.unshift({
+            id: 'all',
+            name: '🎵 All Songs',
+            path: '',
+            songs: [],
+            artistName: ''
         });
 
         populateAlbumSelector();
@@ -159,12 +184,12 @@ function changeAlbum(albumId) {
         const album = state.albums.find(a => a.id === albumId);
         if (!album) return;
 
-        const folder = album.folder || '';
         state.currentSongs = album.songs.map((filename, index) => ({
             filename: filename,
-            folder: folder,
+            path: album.path,
             albumId: album.id,
             albumName: album.name,
+            artistName: album.artistName,
             index: index
         }));
     }
@@ -259,12 +284,13 @@ function loadSong(index) {
     const song = state.currentSongs[index];
     const { title, artist } = parseSongName(song.filename);
 
-    // Build path: mp3/folder/filename or mp3/filename
-    const folder = song.folder ? song.folder + '/' : '';
-    audio.src = `mp3/${folder}${song.filename}`;
+    // Build R2 URL: baseUrl/path/filename (properly encoded)
+    const pathParts = song.path.split('/').map(encodeURIComponent);
+    const encodedFilename = encodeURIComponent(song.filename);
+    audio.src = `${state.baseUrl}/${pathParts.join('/')}/${encodedFilename}`;
 
     songTitle.textContent = title;
-    songArtist.textContent = artist;
+    songArtist.textContent = song.artistName || artist;
 
     renderPlaylist();
 }

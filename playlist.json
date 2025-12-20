@@ -1,109 +1,438 @@
 {
-  "albums": [
+  "baseUrl": "https://pub-2c614bd24cca4ed6948f5bf497b0cfe1.r2.dev",
+  "users": [
     {
-      "name": "🎵 All Songs",
-      "id": "all"
-    },
-    {
-      "name": "Singles",
-      "id": "singles",
-      "folder": "",
-      "songs": [
-        "Folk T - Nu-i Lumina nicari.MP3"
-      ]
-    },
-    {
-      "name": "Maria Raducanu",
-      "id": "maria-raducanu",
-      "folder": "Maria Raducanu",
-      "songs": [
-        "Maria Raducanu - Cristina.mp3",
-        "Maria Raducanu - De la moară pân' la gară.mp3",
-        "Maria Raducanu - La Uite-O, Zau!.mp3",
-        "Maria Raducanu - Luică, luică.mp3",
-        "Maria Raducanu - Mândră floare-i norocul.mp3",
-        "Maria Raducanu - Meu Amore.mp3",
-        "Maria Raducanu - Minciună.mp3",
-        "Maria Raducanu - Nu sunt prost, dar nici deştept.mp3",
-        "Maria Raducanu - Pe dealul plăcintelor.mp3",
-        "Maria Raducanu - Stinge lampa.mp3",
-        "Maria Raducanu - Sus în poarta Raiului.mp3",
-        "Maria Raducanu - Trei Crai De La Răsărit.mp3",
-        "Maria Raducanu - Trei lămâi şi trei gutui.mp3"
-      ]
-    },
-    {
-      "name": "Ed Sheeran - ÷ (Divide)",
-      "id": "ed-divide",
-      "folder": "Ed Sheeran - ÷",
-      "songs": [
-        "01 - Eraser.mp3",
-        "02 - Castle on the Hill.mp3",
-        "03 - Dive.mp3",
-        "04 - Shape of You.mp3",
-        "05 - Perfect.mp3",
-        "06 - Galway Girl.mp3",
-        "07 - Happier.mp3",
-        "08 - New Man.mp3",
-        "09 - Hearts Don't Break Around Here.mp3",
-        "10 - What Do I Know.mp3",
-        "11 - How Would You Feel (Paean).mp3",
-        "12 - Supermarket Flowers.mp3",
-        "13 - Barcelona.mp3",
-        "14 - Bibia Be Ye Ye.mp3",
-        "15 - Nancy Mulligan.mp3",
-        "16 - Save Myself.mp3"
-      ]
-    },
-    {
-      "name": "Ed Sheeran - Subtract",
-      "id": "ed-subtract",
-      "folder": "Ed Sheeran - Subtract (Deluxe Edition) (CD-Rip) (2023) Mp3 320kbps [PMEDIA] ⭐️",
-      "songs": [
-        "01. Boat.mp3",
-        "02. Salt Water.mp3",
-        "03. Eyes Closed.mp3",
-        "04. Life Goes On.mp3",
-        "05. Dusty.mp3",
-        "06. End Of Youth.mp3",
-        "07. Colourblind.mp3",
-        "08. Curtain.mp3",
-        "09. Borderline.mp3",
-        "10. Spark.mp3",
-        "11. Vega.mp3",
-        "12. Sycamore.mp3",
-        "13. No Strings.mp3",
-        "14. The Hills Of Aberfeldy.mp3",
-        "15. Wildflowers.mp3",
-        "16. Stoned.mp3",
-        "17. Toughest.mp3",
-        "18. Moving.mp3"
-      ]
-    },
-    {
-      "name": "Chopin - Nocturnes (Rubinstein)",
-      "id": "chopin-nocturnes",
-      "folder": "Chopin - Nocturnes - Rubinstein",
-      "songs": [
-        "01 Nocturne No. 1 in B♭ minor, Op. 9 No. 1.flac",
-        "02 Nocturne No. 2 in E♭ major, Op. 9 No. 2.flac",
-        "03 Nocturne No. 3 in B major, Op. 9 No. 3.flac",
-        "04 Nocturne No. 4 in F major, Op. 15 No. 1.flac",
-        "05 Nocturne No. 5 in F♯ major, Op. 15 No. 2.flac",
-        "06 Nocturne No. 6 in G minor, Op. 15 No. 3.flac",
-        "07 Nocturne No. 7 in C♯ minor, Op. 27 No. 1.flac",
-        "08 Nocturne No. 8 in D♭ major, Op. 27 No. 2.flac",
-        "09 Nocturne No. 9 in B major, Op. 32 No. 1.flac",
-        "10 Nocturne No. 10 in A♭ major, Op. 32 No. 2.flac",
-        "11 Nocturne No. 11 in G minor, Op. 37 No. 1.flac",
-        "12 Nocturne No. 12 in G major, Op. 37 No. 2.flac",
-        "13 Nocturne No. 13 in C minor, Op. 48 No. 1.flac",
-        "14 Nocturne No. 14 in F♯ minor, Op. 48 No. 2.flac",
-        "15 Nocturne No. 15 in F minor, Op. 55 No. 1.flac",
-        "16 Nocturne No. 16 in E♭ major, Op. 55 No. 2.flac",
-        "17 Nocturne No. 17 in B major, Op. 62 No. 1.flac",
-        "18 Nocturne No. 18 in E major, Op. 62 No. 2.flac",
-        "19 Nocturne No. 19 in E minor, Op. 72 No. 1.flac"
+      "name": "Tiberiu",
+      "id": "tiberiu",
+      "artists": [
+        {
+          "name": "Chopin",
+          "id": "tiberiu-chopin",
+          "albums": [
+            {
+              "name": "Nocturnes - Rubinstein",
+              "id": "tiberiu-chopin-nocturnes---rubinstein",
+              "path": "Tiberiu/Chopin/Nocturnes - Rubinstein",
+              "songs": [
+                "01 Nocturne No. 1 in B♭ minor, Op. 9 No. 1.flac",
+                "02 Nocturne No. 2 in E♭ major, Op. 9 No. 2.flac",
+                "03 Nocturne No. 3 in B major, Op. 9 No. 3.flac",
+                "04 Nocturne No. 4 in F major, Op. 15 No. 1.flac",
+                "05 Nocturne No. 5 in F♯ major, Op. 15 No. 2.flac",
+                "06 Nocturne No. 6 in G minor, Op. 15 No. 3.flac",
+                "07 Nocturne No. 7 in C♯ minor, Op. 27 No. 1.flac",
+                "08 Nocturne No. 8 in D♭ major, Op. 27 No. 2.flac",
+                "09 Nocturne No. 9 in B major, Op. 32 No. 1.flac",
+                "10 Nocturne No. 10 in A♭ major, Op. 32 No. 2.flac",
+                "11 Nocturne No. 11 in G minor, Op. 37 No. 1.flac",
+                "12 Nocturne No. 12 in G major, Op. 37 No. 2.flac",
+                "13 Nocturne No. 13 in C minor, Op. 48 No. 1.flac",
+                "14 Nocturne No. 14 in F♯ minor, Op. 48 No. 2.flac",
+                "15 Nocturne No. 15 in F minor, Op. 55 No. 1.flac",
+                "16 Nocturne No. 16 in E♭ major, Op. 55 No. 2.flac"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Ed Sheeran",
+          "id": "tiberiu-ed-sheeran",
+          "albums": [
+            {
+              "name": "Ed Sheeran  - + (Plus)",
+              "id": "tiberiu-ed-sheeran-ed-sheeran----+-(plus)",
+              "path": "Tiberiu/Ed Sheeran/Ed Sheeran  - + (Plus)",
+              "songs": [
+                "01 The A Team.mp3",
+                "02 Drunk.mp3",
+                "03 U.N.I.mp3",
+                "04 Grade 8.mp3",
+                "05 Wake Me Up.mp3",
+                "06 Small Bump.mp3",
+                "07 This.mp3",
+                "08 The City.mp3",
+                "09 Lego House.mp3",
+                "10 You Need Me I Don't Need You.mp3",
+                "11 Kiss Me.mp3",
+                "12 Give Me Love.mp3"
+              ]
+            },
+            {
+              "name": "Ed Sheeran - Autumn Variations",
+              "id": "tiberiu-ed-sheeran-ed-sheeran---autumn-variations",
+              "path": "Tiberiu/Ed Sheeran/Ed Sheeran - Autumn Variations",
+              "songs": [
+                "01. Magical.mp3",
+                "02. England.mp3",
+                "03. Amazing.mp3",
+                "04. Plastic Bag(Explicit).mp3",
+                "05. Blue.mp3",
+                "06. American Town.mp3",
+                "07. That’s On Me(Explicit).mp3",
+                "08. Page.mp3",
+                "09. Midnight.mp3",
+                "10. Spring.mp3",
+                "11. Punchline.mp3",
+                "12. When Will I Be Alright.mp3",
+                "13. The Day I Was Born(Explicit).mp3",
+                "14. Head - Heels.mp3"
+              ]
+            },
+            {
+              "name": "Ed Sheeran - Subtract",
+              "id": "tiberiu-ed-sheeran-ed-sheeran---subtract",
+              "path": "Tiberiu/Ed Sheeran/Ed Sheeran - Subtract",
+              "songs": [
+                "01. Boat.mp3",
+                "02. Salt Water.mp3",
+                "03. Eyes Closed.mp3",
+                "04. Life Goes On.mp3",
+                "05. Dusty.mp3",
+                "06. End Of Youth.mp3",
+                "07. Colourblind.mp3",
+                "08. Curtain.mp3",
+                "09. Borderline.mp3",
+                "10. Spark.mp3",
+                "11. Vega.mp3",
+                "12. Sycamore.mp3",
+                "13. No Strings.mp3",
+                "14. The Hills Of Aberfeldy.mp3",
+                "15. Wildflowers.mp3",
+                "16. Stoned.mp3",
+                "17. Toughest.mp3",
+                "18. Moving.mp3"
+              ]
+            },
+            {
+              "name": "Ed Sheeran - ÷",
+              "id": "tiberiu-ed-sheeran-ed-sheeran---÷",
+              "path": "Tiberiu/Ed Sheeran/Ed Sheeran - ÷",
+              "songs": [
+                "01 - Eraser.mp3",
+                "02 - Castle on the Hill.mp3",
+                "03 - Dive.mp3",
+                "04 - Shape of You.mp3",
+                "05 - Perfect.mp3",
+                "06 - Galway Girl.mp3",
+                "07 - Happier.mp3",
+                "08 - New Man.mp3",
+                "09 - Hearts Don't Break Around Here.mp3",
+                "10 - What Do I Know.mp3",
+                "11 - How Would You Feel (Paean).mp3",
+                "12 - Supermarket Flowers.mp3",
+                "13 - Barcelona.mp3",
+                "14 - Bibia Be Ye Ye.mp3",
+                "15 - Nancy Mulligan.mp3",
+                "16 - Save Myself.mp3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Emaa",
+          "id": "tiberiu-emaa",
+          "albums": [
+            {
+              "name": "Emaa",
+              "id": "tiberiu-emaa-emaa",
+              "path": "Tiberiu/Emaa",
+              "songs": [
+                "EMAA - 29.mp3",
+                "EMAA - Eros & Thanathos.mp3",
+                "EMAA - Iarna preferat.mp3",
+                "EMAA - In numele binelui.mp3",
+                "EMAA - Macii Infloresc Iarna.mp3",
+                "EMAA - Odata cu tine.mp3",
+                "EMAA - Rosu stins.mp3",
+                "EMAA - Sufletu Imun.mp3",
+                "EMAA - Supra EU.mp3",
+                "EMAA - Universul rar.mp3",
+                "EMAA - Zburatorul.mp3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Linkin Park",
+          "id": "tiberiu-linkin-park",
+          "albums": [
+            {
+              "name": "01 - Hybrid Theory (2000)",
+              "id": "tiberiu-linkin-park-01---hybrid-theory-(2000)",
+              "path": "Tiberiu/Linkin Park/01 - Hybrid Theory (2000)",
+              "songs": [
+                "01 - Papercut.mp3",
+                "02 - One Step Closer.mp3",
+                "03 - With You.mp3",
+                "04 - Points of Authority.mp3",
+                "05 - Crawling.mp3",
+                "06 - Runaway.mp3",
+                "07 - By Myself.mp3",
+                "08 - In the End.mp3",
+                "09 - A Place for My Head.mp3",
+                "10 - Forgotten.mp3",
+                "11 - Cure for the Itch.mp3",
+                "12 - Pushing Me Away.mp3",
+                "Special Edition Bonus Tracks",
+                "Special Edition Bonus Tracks",
+                "Special Edition Bonus Tracks",
+                "Special Edition Bonus Tracks",
+                "Special Edition Bonus Tracks"
+              ]
+            },
+            {
+              "name": "02 - Reanimation (2002)",
+              "id": "tiberiu-linkin-park-02---reanimation-(2002)",
+              "path": "Tiberiu/Linkin Park/02 - Reanimation (2002)",
+              "songs": [
+                "01 - Opening.mp3",
+                "02 - Pts.Of.Athrty (Jay Gordon).mp3",
+                "03 - Enth E Nd (Kutmasta Kurt ft. Motion Man).mp3",
+                "04 - [Chali].mp3",
+                "05 - Frgt-10 (Alchemist ft. Chali 2na).mp3",
+                "06 - P5hng Me A-Wy (Mike Shinoda ft. Stephen Richards).mp3",
+                "07 - Plc.4 Mie Haed (Amp Live ft. Zion).mp3",
+                "08 - X-Ecutioner Style (ft. Black Thought).mp3",
+                "09 - H! Vltg3 (Evidence ft. Pharoahe Monch & Dj Babu).mp3",
+                "10 - Riff Raff.mp3",
+                "11 - Wth-You (Chairman Hahn ft. Aceyalone).mp3",
+                "12 - Ntr-Mssion.mp3",
+                "13 - Ppr-Kut (Cheapshot & Jubacca ft. Rasco & Planet Asia).mp3",
+                "14 - Rnw@Y (Backyard Bangers ft. Phoenix Orion).mp3",
+                "15 - My-Dsmbr (Mickey P. ft. Kelli Ali).mp3",
+                "16 - [Stef].mp3",
+                "17 - By_Myslf (Josh Abraham & Mike Shinoda).mp3",
+                "18 - Kyur4 Th Ich (Chairman Hahn).mp3",
+                "19 - 1stp Klosr (The Humble Brothers ft. Jonathan Davis).mp3",
+                "20 - Krwlng (Mike Shinoda ft. Aaron Lewis).mp3"
+              ]
+            },
+            {
+              "name": "03 - Meteora (2003)",
+              "id": "tiberiu-linkin-park-03---meteora-(2003)",
+              "path": "Tiberiu/Linkin Park/03 - Meteora (2003)",
+              "songs": [
+                "01 - Foreword.mp3",
+                "02 - Don't Stay.mp3",
+                "03 - Somewhere I Belong.mp3",
+                "04 - Lying from You.mp3",
+                "05 - Hit the Floor.mp3",
+                "06 - Easier to Run.mp3",
+                "07 - Faint.mp3",
+                "08 - Figure.09.mp3",
+                "09 - Breaking the Habit.mp3",
+                "10 - From the Inside.mp3",
+                "11 - Nobody's Listening.mp3",
+                "12 - Session.mp3",
+                "13 - Numb.mp3",
+                "Deluxe Edition",
+                "Deluxe Edition",
+                "Deluxe Edition"
+              ]
+            },
+            {
+              "name": "05 - Collision Course (feat. Jay-Z) (2004)",
+              "id": "tiberiu-linkin-park-05---collision-course-(feat.-jay-z)-(2004)",
+              "path": "Tiberiu/Linkin Park/05 - Collision Course (feat. Jay-Z) (2004)",
+              "songs": [
+                "01 - Dirt Off Your Shoulder & Lying From You.mp3",
+                "02 - Big Pimpin' & Papercut.mp3",
+                "03 - Jigga What & Faint.mp3",
+                "04 - Numb & Encore.mp3",
+                "05 - Izzo & In The End.mp3",
+                "06 - Points Of Authority & 99 Problems & One Step Closer.mp3"
+              ]
+            },
+            {
+              "name": "06 - Minutes To Midnight (2007)",
+              "id": "tiberiu-linkin-park-06---minutes-to-midnight-(2007)",
+              "path": "Tiberiu/Linkin Park/06 - Minutes To Midnight (2007)",
+              "songs": [
+                "01 - Wake.mp3",
+                "02 - Given Up.mp3",
+                "03 - Leave Out All the Rest.mp3",
+                "04 - Bleed it Out.mp3",
+                "05 - Shadow of the Day.mp3",
+                "06 - What I've Done.mp3",
+                "07 - Hands Held High.mp3",
+                "08 - No More Sorrow.mp3",
+                "09 - Valentine's Day.mp3",
+                "10 - In Between.mp3",
+                "11 - In Pieces.mp3",
+                "12 - The Little Things Give You Away.mp3",
+                "Asian Digital Download Tour Edition Bonus Tracks",
+                "Asian Digital Download Tour Edition Bonus Tracks",
+                "Asian Digital Download Tour Edition Bonus Tracks",
+                "Best Buy Edition Bonus Tracks",
+                "Best Buy Edition Bonus Tracks",
+                "European Digital Download Tour Edition Bonus Tracks",
+                "European Digital Download Tour Edition Bonus Tracks",
+                "European Digital Download Tour Edition Bonus Tracks",
+                "International Version",
+                "Japan Edition Bonus Track",
+                "Tour Edition Bonus Tracks",
+                "Tour Edition Bonus Tracks",
+                "Tour Edition Bonus Tracks",
+                "Wal-Mart Exclusive Bonus Tracks",
+                "Wal-Mart Exclusive Bonus Tracks"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Maria Raducanu",
+          "id": "tiberiu-maria-raducanu",
+          "albums": [
+            {
+              "name": "Maria Raducanu",
+              "id": "tiberiu-maria-raducanu-maria-raducanu",
+              "path": "Tiberiu/Maria Raducanu",
+              "songs": [
+                "Maria Raducanu - Cristina.mp3",
+                "Maria Raducanu - De la moară pân' la gară.mp3",
+                "Maria Raducanu - La Uite-O, Zau!.mp3",
+                "Maria Raducanu - Luică, luică.mp3",
+                "Maria Raducanu - Meu Amore.mp3",
+                "Maria Raducanu - Minciună.mp3",
+                "Maria Raducanu - Mândră floare-i norocul.mp3",
+                "Maria Raducanu - Nu sunt prost, dar nici deştept.mp3",
+                "Maria Raducanu - Pe dealul plăcintelor.mp3",
+                "Maria Raducanu - Stinge lampa.mp3",
+                "Maria Raducanu - Sus în poarta Raiului.mp3",
+                "Maria Raducanu - Trei Crai De La Răsărit.mp3",
+                "Maria Raducanu - Trei lămâi şi trei gutui.mp3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Pink Floyd",
+          "id": "tiberiu-pink-floyd",
+          "albums": [
+            {
+              "name": "Pink Floyd",
+              "id": "tiberiu-pink-floyd-pink-floyd",
+              "path": "Tiberiu/Pink Floyd",
+              "songs": [
+                "Pink Floyd - A Pillow Of Winds - 2011 Remastered Version.mp3",
+                "Pink Floyd - A Saucerful Of Secrets.mp3",
+                "Pink Floyd - Another Brick In The Wall, Pt 2 (2011 Remastered Version).mp3",
+                "Pink Floyd - Any Colour You Like - 2011 Remastered Version.mp3",
+                "Pink Floyd - Apples And Oranges - 2010 Remastered Version.mp3",
+                "Pink Floyd - Arnold Layne (1996 Remastered Version).mp3",
+                "Pink Floyd - Astronomy Domine (2011 Remastered Version).mp3",
+                "Pink Floyd - Atom Heart Mother Suite.mp3",
+                "Pink Floyd - Bike.mp3",
+                "Pink Floyd - Brain Damage (2011 Remastered Version).mp3",
+                "Pink Floyd - Breathe (In The Air) - 2011 Remastered Version.mp3",
+                "Pink Floyd - Bring The Boys Back Home - 2011 Remastered Version.mp3",
+                "Pink Floyd - Burning Bridges.mp3",
+                "Pink Floyd - Candy And A Currant Bun - 2016 Remastered Version.mp3",
+                "Pink Floyd - Careful With That Axe, Eugene (Live).mp3",
+                "Pink Floyd - Cirrus Minor.mp3",
+                "Pink Floyd - Cluster One - 2011 Remaster.mp3",
+                "Pink Floyd - Comfortably Numb (2011 Remastered Version).mp3",
+                "Pink Floyd - Coming Back To Life.mp3",
+                "Pink Floyd - Crying Song - 2011 Remastered Version.mp3",
+                "Pink Floyd - Cymbaline.mp3",
+                "Pink Floyd - Dogs - 2011 Remastered Version.mp3",
+                "Pink Floyd - Don't Leave Me Now - 2011 Remastered Version.mp3",
+                "Pink Floyd - Echoes - 2011 Remastered Version.mp3",
+                "Pink Floyd - Eclipse (2011 Remastered Version).mp3",
+                "Pink Floyd - Fearless (2011 Remastered Version).mp3",
+                "Pink Floyd - Flaming - 2011 Remastered Version.mp3",
+                "Pink Floyd - Free Four.mp3",
+                "Pink Floyd - Goodbye Blue Sky - 2011 Remastered Version.mp3",
+                "Pink Floyd - Goodbye Cruel World - 2011 Remastered Version.mp3",
+                "Pink Floyd - Have A Cigar (2011 Remastered Version).mp3",
+                "Pink Floyd - Hey You (2011 Remastered Version).mp3",
+                "Pink Floyd - High Hopes - 2011 Remaster.mp3",
+                "Pink Floyd - Ibiza Bar - 2011 Remastered Version.mp3",
+                "Pink Floyd - If.mp3",
+                "Pink Floyd - In The Flesh - 2011 Remastered Version.mp3",
+                "Pink Floyd - Interstellar Overdrive - 2011 Remastered Version.mp3",
+                "Pink Floyd - It Would Be So Nice - 2016 Remastered Version.mp3",
+                "Pink Floyd - Julia Dream - 1996 Remastered Version.mp3",
+                "Pink Floyd - Keep Talking - 2011 Remaster.mp3",
+                "Pink Floyd - Learning To Fly (2011 Remastered Version).mp3",
+                "Pink Floyd - Let There Be More Light.mp3",
+                "Pink Floyd - Lost For Words - 2011 Remaster.mp3",
+                "Pink Floyd - Main Theme - 2011 Remastered Version.mp3",
+                "Pink Floyd - Money (2011 Remastered Version).mp3",
+                "Pink Floyd - Mother (2011 Remastered Version).mp3",
+                "Pink Floyd - Not Now John.mp3",
+                "Pink Floyd - On The Run - 2011 Remastered Version.mp3",
+                "Pink Floyd - On The Turning Away (2011 Remastered Version).mp3",
+                "Pink Floyd - One Of My Turns - 2011 Remastered Version.mp3",
+                "Pink Floyd - One Of These Days (2011 Remastered Version).mp3",
+                "Pink Floyd - One Slip.mp3",
+                "Pink Floyd - Paintbox.mp3",
+                "Pink Floyd - Pigs (Three Different Ones) (2011 - Remaster).mp3",
+                "Pink Floyd - Point Me At The Sky - 2016 Remastered Version.mp3",
+                "Pink Floyd - Remember A Day.mp3",
+                "Pink Floyd - Run Like Hell (2011 Remastered Version).mp3",
+                "Pink Floyd - San Tropez.mp3",
+                "Pink Floyd - Scarecrow - 2011 Remastered Version.mp3",
+                "Pink Floyd - See Emily Play (1996 Remastered Version).mp3",
+                "Pink Floyd - Shine On You Crazy Diamond, Pts 1 - 5 (2011 Remastered Version).mp3",
+                "Pink Floyd - Side 1, Pt 1 Things Left. Unsaid.mp3",
+                "Pink Floyd - Side 1, Pt 2 It's What We Do.mp3",
+                "Pink Floyd - Side 3, Pt 7 Talkin' Hawkin'.mp3",
+                "Pink Floyd - Side 4, Pt 4 Louder Than Words.mp3",
+                "Pink Floyd - Sorrow.mp3",
+                "Pink Floyd - Speak To Me - 2011 Remastered Version.mp3",
+                "Pink Floyd - Stay - 2011 Remastered Version.mp3",
+                "Pink Floyd - Summer '68.mp3",
+                "Pink Floyd - Take It Back.mp3",
+                "Pink Floyd - Terminal Frost - 2011 Remastered Version.mp3",
+                "Pink Floyd - The Dogs Of War - 2011 Remastered Version.mp3",
+                "Pink Floyd - The Final Cut - 2011 Remastered Version.mp3",
+                "Pink Floyd - The Fletcher Memorial Home.mp3",
+                "Pink Floyd - The Gnome - 2011 Remastered Version.mp3",
+                "Pink Floyd - The Gold It's In The.mp3",
+                "Pink Floyd - The Great Gig In The Sky (2011 Remastered Version).mp3",
+                "Pink Floyd - The Happiest Days Of Our Lives (2011 Remastered Version).mp3",
+                "Pink Floyd - The Hero's Return - 2011 Remastered Version.mp3",
+                "Pink Floyd - The Nile Song.mp3",
+                "Pink Floyd - The Trial - 2011 Remastered Version.mp3",
+                "Pink Floyd - Time (2011 Remastered Version).mp3",
+                "Pink Floyd - Us And Them (2011 Remastered Version).mp3",
+                "Pink Floyd - Welcome To The Machine (2011 Remastered Version).mp3",
+                "Pink Floyd - What Do You Want From Me - 2011 Remaster.mp3",
+                "Pink Floyd - When The Tigers Broke Free.mp3",
+                "Pink Floyd - Wish You Were Here (2011 Remastered Version).mp3",
+                "Pink Floyd - Wots Uh The Deal.mp3",
+                "Pink Floyd - Young Lust (2011 Remastered Version).mp3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Thievery Corporation",
+          "id": "tiberiu-thievery-corporation",
+          "albums": [
+            {
+              "name": "Saudade",
+              "id": "tiberiu-thievery-corporation-saudade",
+              "path": "Tiberiu/Thievery Corporation/Saudade",
+              "songs": [
+                "01 Décollage (Feat. Lou Lou Ghelichkhani).mp3",
+                "02 Meu Négo (Feat. Karina Zaviani).mp3",
+                "03 Quem Me Leva (Feat. Elin Melgarejo).mp3",
+                "04 Firelight (Feat. Lou Lou Ghelichkhani).mp3",
+                "05 Sola In Citta (Feat. Elin Melgarejo).mp3",
+                "06 No More Disguise (Feat. Lou Lou Ghelichkhani).mp3",
+                "07 Saudade.mp3",
+                "08 Claridad (Feat. Natalia Clavier).mp3",
+                "09 Nós Dois (Feat. Karina Zaviani).mp3",
+                "10 Le Coeur (Feat. Lou Lou Ghelichkhani).mp3",
+                "11 Para Sempre (Feat. Elin Melgarejo).mp3",
+                "12 Bateau Rouge (Feat. Lou Lou Ghelichkhani).mp3",
+                "13 Depth Of My Soul (Feat. Shana Halligan).mp3"
+              ]
+            }
+          ]
+        }
       ]
     }
   ]
