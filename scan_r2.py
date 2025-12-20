@@ -139,10 +139,15 @@ def generate_playlist_json(structure):
                 # Sort songs by filename
                 sorted_songs = sorted(songs, key=lambda x: x['filename'])
 
+                # Extract real path from first song (remove filename)
+                first_song_path = sorted_songs[0]['path']
+                # Get directory path (everything except the filename)
+                real_path = '/'.join(first_song_path.split('/')[:-1])
+
                 album_data = {
                     "name": album_name,
                     "id": f"{artist_data['id']}-{album_name.lower().replace(' ', '-')}",
-                    "path": f"{user_name}/{artist_name}/{album_name}" if album_name != artist_name else f"{user_name}/{artist_name}",
+                    "path": real_path,
                     "songs": [song['filename'] for song in sorted_songs]
                 }
 
