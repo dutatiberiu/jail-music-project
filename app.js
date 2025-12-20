@@ -305,10 +305,23 @@ function play() {
         audioContext.resume();
     }
 
-    audio.play();
-    state.isPlaying = true;
-    updatePlayButton();
-    drawVisualizer();
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                console.log('Audio playback started successfully');
+                state.isPlaying = true;
+                updatePlayButton();
+                drawVisualizer();
+            })
+            .catch(error => {
+                console.error('Error playing audio:', error);
+                console.log('Audio src:', audio.src);
+                console.log('Audio ready state:', audio.readyState);
+                console.log('Audio network state:', audio.networkState);
+            });
+    }
 }
 
 function pause() {
@@ -504,6 +517,16 @@ audio.addEventListener('ended', () => {
     } else {
         pause();
     }
+});
+
+// Debug audio loading
+audio.addEventListener('loadstart', () => console.log('Audio loading started'));
+audio.addEventListener('canplay', () => console.log('Audio can play'));
+audio.addEventListener('playing', () => console.log('Audio is playing'));
+audio.addEventListener('error', (e) => {
+    console.error('Audio error:', e);
+    console.error('Audio error details:', audio.error);
+    console.log('Failed URL:', audio.src);
 });
 
 // Keyboard shortcuts
