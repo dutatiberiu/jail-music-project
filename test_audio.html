@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R2 Audio Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #6c5ce7;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(26, 31, 58, 0.8);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .test-url {
+            background: rgba(10, 14, 39, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            word-break: break-all;
+            margin: 15px 0;
+            font-size: 13px;
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        button {
+            background: linear-gradient(135deg, #6c5ce7, #00d4ff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(108, 92, 231, 0.4);
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        .success {
+            color: #51cf66;
+            background: rgba(81, 207, 102, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid rgba(81, 207, 102, 0.3);
+        }
+        audio {
+            width: 100%;
+            margin-top: 15px;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 R2 Audio Connection Test</h1>
+
+    <div class="test-section">
+        <h2>Test 1: Direct Audio Loading</h2>
+        <p>Testing: Ed Sheeran - 01 The A Team.mp3</p>
+        <div class="test-url" id="testUrl1"></div>
+        <button onclick="testAudio1()">▶️ Test Play</button>
+        <audio id="audio1" controls></audio>
+        <div id="result1"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: With Special Characters</h2>
+        <p>Testing: Chopin - 01 Nocturne No. 1 in B♭ minor, Op. 9 No. 1.flac</p>
+        <div class="test-url" id="testUrl2"></div>
+        <button onclick="testAudio2()">▶️ Test Play</button>
+        <audio id="audio2" controls></audio>
+        <div id="result2"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const baseUrl = 'https://pub-2c614bd24cca4ed6948f5bf497b0cfe1.r2.dev';
+        const logDiv = document.getElementById('log');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logDiv.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Test 1: Simple MP3
+        function testAudio1() {
+            log('Testing audio 1: Ed Sheeran - 01 The A Team.mp3');
+
+            const path = 'Tiberiu/Ed Sheeran/Ed Sheeran  - + (Plus)';
+            const filename = '01 The A Team.mp3';
+
+            // Build URL like app.js does
+            const pathParts = path.split('/').map(encodeURIComponent);
+            const encodedFilename = encodeURIComponent(filename);
+            const url = `${baseUrl}/${pathParts.join('/')}/${encodedFilename}`;
+
+            document.getElementById('testUrl1').textContent = url;
+            log(`URL: ${url}`);
+
+            const audio = document.getElementById('audio1');
+            const result = document.getElementById('result1');
+
+            audio.src = url;
+            result.innerHTML = '<div class="success">⏳ Loading...</div>';
+
+            audio.onloadeddata = () => {
+                result.innerHTML = '<div class="success">✅ Audio loaded successfully! CORS is working!</div>';
+                log('✅ Audio 1 loaded successfully!', 'success');
+            };
+
+            audio.onerror = (e) => {
+                const errorMsg = `Failed to load audio. Error: ${audio.error ? audio.error.message : 'Unknown'}`;
+                result.innerHTML = `<div class="error">❌ ${errorMsg}<br><br>Check browser console (F12) for CORS errors.</div>`;
+                log(`❌ ${errorMsg}`, 'error');
+
+                // Try to fetch to get more detailed error
+                fetch(url)
+                    .then(response => {
+                        log(`Fetch response status: ${response.status} ${response.statusText}`);
+                        if (!response.ok) {
+                            log(`❌ HTTP Error: ${response.status}`, 'error');
+                        }
+                    })
+                    .catch(err => {
+                        log(`❌ Fetch error: ${err.message}`, 'error');
+                        if (err.message.includes('CORS')) {
+                            log('❌ CORS ERROR: Check R2 bucket CORS configuration!', 'error');
+                        }
+                    });
+            };
+        }
+
+        // Test 2: FLAC with special characters
+        function testAudio2() {
+            log('Testing audio 2: Chopin - Nocturne with ♭ character');
+
+            const path = 'Tiberiu/Chopin/Nocturnes - Rubinstein';
+            const filename = '01 Nocturne No. 1 in B♭ minor, Op. 9 No. 1.flac';
+
+            // Build URL like app.js does
+            const pathParts = path.split('/').map(encodeURIComponent);
+            const encodedFilename = encodeURIComponent(filename);
+            const url = `${baseUrl}/${pathParts.join('/')}/${encodedFilename}`;
+
+            document.getElementById('testUrl2').textContent = url;
+            log(`URL: ${url}`);
+
+            const audio = document.getElementById('audio2');
+            const result = document.getElementById('result2');
+
+            audio.src = url;
+            result.innerHTML = '<div class="success">⏳ Loading...</div>';
+
+            audio.onloadeddata = () => {
+                result.innerHTML = '<div class="success">✅ Audio loaded successfully! Special characters work!</div>';
+                log('✅ Audio 2 loaded successfully!', 'success');
+            };
+
+            audio.onerror = (e) => {
+                const errorMsg = `Failed to load audio. Error: ${audio.error ? audio.error.message : 'Unknown'}`;
+                result.innerHTML = `<div class="error">❌ ${errorMsg}<br><br>Check browser console (F12) for CORS errors.</div>`;
+                log(`❌ ${errorMsg}`, 'error');
+
+                // Try to fetch to get more detailed error
+                fetch(url)
+                    .then(response => {
+                        log(`Fetch response status: ${response.status} ${response.statusText}`);
+                        if (!response.ok) {
+                            log(`❌ HTTP Error: ${response.status}`, 'error');
+                        }
+                    })
+                    .catch(err => {
+                        log(`❌ Fetch error: ${err.message}`, 'error');
+                        if (err.message.includes('CORS')) {
+                            log('❌ CORS ERROR: Check R2 bucket CORS configuration!', 'error');
+                        }
+                    });
+            };
+        }
+
+        log('Test page loaded. Click buttons to test audio loading.');
+        log(`Base URL: ${baseUrl}`);
+    </script>
+</body>
+</html>
