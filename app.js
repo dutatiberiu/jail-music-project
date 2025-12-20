@@ -287,7 +287,8 @@ function loadSong(index) {
     // Build R2 URL: baseUrl/path/filename (properly encoded)
     const pathParts = song.path.split('/').map(encodeURIComponent);
     const encodedFilename = encodeURIComponent(song.filename);
-    audio.src = `${state.baseUrl}/${pathParts.join('/')}/${encodedFilename}`;
+    // Add cache-busting parameter to force fresh CORS headers
+    audio.src = `${state.baseUrl}/${pathParts.join('/')}/${encodedFilename}?v=2`;
 
     songTitle.textContent = title;
     songArtist.textContent = song.artistName || artist;
