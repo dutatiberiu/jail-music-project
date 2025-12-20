@@ -1,11 +1,14 @@
 // ===== GLOBAL STATE =====
 const state = {
     baseUrl: '',
+    artists: [],           // NEW: Store artist data with their albums
     albums: [],
     allSongs: [],
+    currentArtist: null,   // NEW: Track selected artist ID
     currentAlbum: null,
     currentSongs: [],
     currentIndex: 0,
+    currentTab: 'artists', // NEW: Track current tab
     isPlaying: false,
     isShuffle: false,
     repeatMode: 'off', // 'off', 'all', 'one'
@@ -35,8 +38,12 @@ const songTitle = document.getElementById('songTitle');
 const songArtist = document.getElementById('songArtist');
 const playlistItems = document.getElementById('playlistItems');
 const searchInput = document.getElementById('searchInput');
-const albumSelect = document.getElementById('albumSelect');
 const visualizerCanvas = document.getElementById('visualizer');
+
+// NEW: Tab elements
+const artistsPanel = document.getElementById('artists-panel');
+const albumsPanel = document.getElementById('albums-panel');
+const songsPanel = document.getElementById('songs-panel');
 
 // ===== WEB AUDIO API SETUP =====
 let audioContext;
@@ -109,23 +116,39 @@ async function loadPlaylist() {
 
         // Store baseUrl for R2 access
         state.baseUrl = data.baseUrl;
+        state.artists = [];
         state.albums = [];
         state.allSongs = [];
 
-        // Build albums and songs from multi-user structure
+        // Build artists array with nested album data
         data.users.forEach(user => {
             user.artists.forEach(artist => {
-                artist.albums.forEach(album => {
-                    // Add album to flat albums array
+                const artistData = {
+                    id: artist.id,
+                    name: artist.name,
+                    albums: artist.albums.map(album => ({
+                        id: album.id,
+                        name: album.name,
+                        path: album.path,
+                        songs: album.songs,
+                        artistName: artist.name,
+                        artistId: artist.id
+                    }))
+                };
+                state.artists.push(artistData);
+
+                // Also build flat albums array (for backwards compatibility)
+                artistData.albums.forEach(album => {
                     state.albums.push({
                         id: album.id,
                         name: `${artist.name} - ${album.name}`,
                         path: album.path,
                         songs: album.songs,
-                        artistName: artist.name
+                        artistName: artist.name,
+                        artistId: artist.id
                     });
 
-                    // Add songs to all songs array
+                    // Build all songs array
                     album.songs.forEach((filename) => {
                         state.allSongs.push({
                             filename: filename,
@@ -133,6 +156,7 @@ async function loadPlaylist() {
                             albumId: album.id,
                             albumName: album.name,
                             artistName: artist.name,
+                            artistId: artist.id,
                             globalIndex: state.allSongs.length
                         });
                     });
@@ -140,17 +164,10 @@ async function loadPlaylist() {
             });
         });
 
-        // Add "All Songs" option at the beginning
-        state.albums.unshift({
-            id: 'all',
-            name: '🎵 All Songs',
-            path: '',
-            songs: [],
-            artistName: ''
-        });
-
-        populateAlbumSelector();
-        changeAlbum('all'); // Start with "All Songs"
+        // Initialize tabs
+        renderArtists();
+        renderAlbums();
+        loadAllSongs(); // Start with all songs in songs tab
     } catch (error) {
         console.error('Error loading playlist:', error);
         songTitle.textContent = 'Error loading playlist';
@@ -158,49 +175,125 @@ async function loadPlaylist() {
     }
 }
 
-function populateAlbumSelector() {
-    albumSelect.innerHTML = '';
-    state.albums.forEach(album => {
-        const option = document.createElement('option');
-        option.value = album.id;
-        option.textContent = album.name;
-        albumSelect.appendChild(option);
-    });
+// Render Artists Tab
+function renderArtists() {
+    const html = state.artists.map(artist => {
+        const totalSongs = artist.albums.reduce((sum, album) => sum + album.songs.length, 0);
+        return `
+            <div class="list-item ${state.currentArtist === artist.id ? 'active' : ''}" onclick="selectArtist('${artist.id}')">
+                <div class="list-item-header">
+                    <div class="list-item-name">${artist.name}</div>
+                    <div class="list-item-count">${artist.albums.length} albums • ${totalSongs} songs</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    artistsPanel.innerHTML = html;
 }
 
-function changeAlbum(albumId) {
-    state.currentAlbum = albumId;
-    albumSelect.value = albumId;
-    searchInput.value = ''; // Clear search
+// Render Albums Tab (filtered by artist if selected)
+function renderAlbums() {
+    let albumsToShow = [];
 
-    if (albumId === 'all') {
-        // All songs
-        state.currentSongs = state.allSongs.map((song, index) => ({
-            ...song,
-            index: index
+    if (!state.currentArtist) {
+        // Show all albums from all artists
+        albumsToShow = state.albums.map(album => ({
+            ...album,
+            displayName: album.name // Already includes artist name
         }));
     } else {
-        // Specific album
-        const album = state.albums.find(a => a.id === albumId);
-        if (!album) return;
-
-        state.currentSongs = album.songs.map((filename, index) => ({
-            filename: filename,
-            path: album.path,
-            albumId: album.id,
-            albumName: album.name,
-            artistName: album.artistName,
-            index: index
-        }));
+        // Show only albums from selected artist
+        const artist = state.artists.find(a => a.id === state.currentArtist);
+        if (artist) {
+            albumsToShow = artist.albums.map(album => ({
+                ...album,
+                displayName: album.name // Just album name
+            }));
+        }
     }
+
+    const html = albumsToShow.map(album => `
+        <div class="list-item ${state.currentAlbum === album.id ? 'active' : ''}" onclick="selectAlbum('${album.id}')">
+            <div class="list-item-header">
+                <div class="list-item-name">${album.displayName}</div>
+                <div class="list-item-count">${album.songs.length} songs</div>
+            </div>
+        </div>
+    `).join('');
+
+    albumsPanel.innerHTML = html || '<div style="padding: 20px; text-align: center; color: #a0a0a0;">No albums</div>';
+}
+
+// Select Artist
+function selectArtist(artistId) {
+    state.currentArtist = artistId;
+    state.currentAlbum = null;
+    renderArtists();
+    renderAlbums();
+    // Auto-switch to albums tab
+    switchTab('albums');
+}
+
+// Select Album
+function selectAlbum(albumId) {
+    state.currentAlbum = albumId;
+
+    const album = state.albums.find(a => a.id === albumId);
+    if (!album) return;
+
+    state.currentSongs = album.songs.map((filename, index) => ({
+        filename: filename,
+        path: album.path,
+        albumId: album.id,
+        albumName: album.name,
+        artistName: album.artistName,
+        index: index
+    }));
 
     state.filteredSongs = [...state.currentSongs];
     state.currentIndex = 0;
     renderPlaylist();
+    renderAlbums();
+
+    // Auto-switch to songs tab
+    switchTab('songs');
 
     if (state.currentSongs.length > 0) {
         loadSong(0);
     }
+}
+
+// Load all songs
+function loadAllSongs() {
+    state.currentSongs = state.allSongs.map((song, index) => ({
+        ...song,
+        index: index
+    }));
+    state.filteredSongs = [...state.currentSongs];
+    state.currentIndex = 0;
+    renderPlaylist();
+    if (state.currentSongs.length > 0) {
+        loadSong(0);
+    }
+}
+
+// Switch Tab
+function switchTab(tabName) {
+    state.currentTab = tabName;
+
+    // Update tab buttons
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('active');
+        }
+    });
+
+    // Update tab panels
+    document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+    });
+    document.getElementById(tabName + '-panel').classList.add('active');
 }
 
 function renderPlaylist() {
@@ -504,7 +597,13 @@ volumeBtn.addEventListener('click', toggleMute);
 volumeRange.addEventListener('input', (e) => setVolume(e.target.value));
 progressBar.addEventListener('click', seek);
 searchInput.addEventListener('input', (e) => filterPlaylist(e.target.value));
-albumSelect.addEventListener('change', (e) => changeAlbum(e.target.value));
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        switchTab(tab.dataset.tab);
+    });
+});
 
 // Audio events
 audio.addEventListener('timeupdate', updateProgress);
