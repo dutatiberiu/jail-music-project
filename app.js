@@ -16,7 +16,12 @@ const state = {
     isMuted: false,
     previousVolume: 0.7,
     filteredSongs: [],
-    shuffleHistory: []
+    shuffleHistory: [],
+    // Visualizer state
+    visualizerStyle: localStorage.getItem('visualizerStyle') || 'enhanced-bars',
+    smoothingFactor: 0.75,
+    previousDataArray: null,
+    visualizerOpacity: 1
 };
 
 // ===== DOM ELEMENTS =====
@@ -59,13 +64,258 @@ function setupAudioContext() {
         const source = audioContext.createMediaElementSource(audio);
         source.connect(analyser);
         analyser.connect(audioContext.destination);
-        analyser.fftSize = 256;
-        bufferLength = analyser.frequencyBinCount;
+
+        // Increased FFT size for better frequency resolution
+        analyser.fftSize = 512; // Changed from 256
+        // Smoothing for more fluid visualization
+        analyser.smoothingTimeConstant = 0.7;
+
+        bufferLength = analyser.frequencyBinCount; // Now 256
         dataArray = new Uint8Array(bufferLength);
     }
 }
 
-// ===== VISUALIZER =====
+// ===== VISUALIZER RENDERERS =====
+const VisualizerRenderers = {
+    // Shared gradient cache to avoid recreating per frame
+    gradientCache: {},
+
+    // Base renderer with common utilities
+    BaseRenderer: {
+        // Reusable gradient - create once, reuse forever
+        getGradient(ctx, type, x1, y1, x2, y2) {
+            const key = `${type}-${x1}-${y1}-${x2}-${y2}`;
+            if (!VisualizerRenderers.gradientCache[key]) {
+                const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+                gradient.addColorStop(0, '#6c5ce7');
+                gradient.addColorStop(0.5, '#00d4ff');
+                gradient.addColorStop(1, '#6c5ce7');
+                VisualizerRenderers.gradientCache[key] = gradient;
+            }
+            return VisualizerRenderers.gradientCache[key];
+        },
+
+        // Smooth interpolation between data points
+        interpolateData(current, previous, factor) {
+            if (!previous) return current;
+            return new Uint8Array(current.map((val, i) =>
+                previous[i] + (val - previous[i]) * factor
+            ));
+        },
+
+        // Apply glow effect
+        applyGlow(ctx, color, blur) {
+            ctx.shadowColor = color;
+            ctx.shadowBlur = blur;
+        },
+
+        clearGlow(ctx) {
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+        }
+    },
+
+    // Enhanced Bars Renderer
+    'enhanced-bars': {
+        render(ctx, width, height, dataArray, smoothedData) {
+            const barCount = bufferLength;
+            const barWidth = (width / barCount) * 2.5;
+            const gap = 1;
+
+            // Draw reflection first (below main bars)
+            this.drawReflection(ctx, width, height, smoothedData, barWidth, gap);
+
+            // Draw main bars with glow
+            this.drawBars(ctx, width, height, smoothedData, barWidth, gap);
+        },
+
+        drawBars(ctx, width, height, data, barWidth, gap) {
+            const midHeight = height * 0.5;
+            let x = 0;
+
+            // Create gradient once for all bars
+            const gradient = VisualizerRenderers.BaseRenderer.getGradient(
+                ctx, 'bars', 0, midHeight, 0, height
+            );
+
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = (data[i] / 255) * midHeight * 0.9;
+
+                // Apply glow effect
+                VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#6c5ce7', 20);
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, height - barHeight - midHeight, barWidth, barHeight);
+
+                x += barWidth + gap;
+            }
+
+            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
+        },
+
+        drawReflection(ctx, width, height, data, barWidth, gap) {
+            const midHeight = height * 0.5;
+            let x = 0;
+
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+
+            const reflectionGradient = ctx.createLinearGradient(0, midHeight, 0, height);
+            reflectionGradient.addColorStop(0, 'rgba(108, 92, 231, 0.6)');
+            reflectionGradient.addColorStop(1, 'rgba(0, 212, 255, 0.2)');
+
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = (data[i] / 255) * midHeight * 0.5;
+
+                ctx.fillStyle = reflectionGradient;
+                ctx.fillRect(x, midHeight, barWidth, barHeight);
+
+                x += barWidth + gap;
+            }
+
+            ctx.restore();
+        }
+    },
+
+    // Circular/Radial Renderer
+    'circular': {
+        render(ctx, width, height, dataArray, smoothedData) {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const maxDimension = Math.min(width, height);
+            const radius = maxDimension * 0.3;
+            const maxBarHeight = maxDimension * 0.25;
+
+            // Draw glow ring
+            this.drawGlowRing(ctx, centerX, centerY, radius);
+
+            // Draw radial bars
+            this.drawRadialBars(ctx, centerX, centerY, radius, maxBarHeight, smoothedData);
+
+            // Draw center circle
+            this.drawCenterCircle(ctx, centerX, centerY, radius * 0.3);
+        },
+
+        drawRadialBars(ctx, centerX, centerY, innerRadius, maxBarHeight, data) {
+            const barCount = data.length;
+            const angleStep = (Math.PI * 2) / barCount;
+
+            for (let i = 0; i < barCount; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const barHeight = (data[i] / 255) * maxBarHeight;
+
+                const innerX = centerX + Math.cos(angle) * innerRadius;
+                const innerY = centerY + Math.sin(angle) * innerRadius;
+                const outerX = centerX + Math.cos(angle) * (innerRadius + barHeight);
+                const outerY = centerY + Math.sin(angle) * (innerRadius + barHeight);
+
+                // Create gradient for this bar
+                const gradient = ctx.createLinearGradient(innerX, innerY, outerX, outerY);
+                gradient.addColorStop(0, '#6c5ce7');
+                gradient.addColorStop(1, '#00d4ff');
+
+                // Apply glow
+                VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#00d4ff', 15);
+
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(innerX, innerY);
+                ctx.lineTo(outerX, outerY);
+                ctx.stroke();
+            }
+
+            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
+        },
+
+        drawGlowRing(ctx, centerX, centerY, radius) {
+            ctx.save();
+            VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#6c5ce7', 30);
+
+            ctx.strokeStyle = 'rgba(108, 92, 231, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.restore();
+        },
+
+        drawCenterCircle(ctx, centerX, centerY, radius) {
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, radius
+            );
+            gradient.addColorStop(0, '#00d4ff');
+            gradient.addColorStop(1, '#6c5ce7');
+
+            VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#00d4ff', 20);
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
+        }
+    },
+
+    // Waveform Renderer
+    'waveform': {
+        render(ctx, width, height, dataArray, smoothedData) {
+            // Use time domain data for waveform
+            analyser.getByteTimeDomainData(dataArray);
+
+            const centerY = height / 2;
+
+            // Draw main waveform with glow
+            this.drawWave(ctx, width, height, dataArray, centerY, 1.0, '#00d4ff', 3);
+
+            // Draw secondary waveform (mirrored)
+            this.drawWave(ctx, width, height, dataArray, centerY, 0.6, '#6c5ce7', 2);
+        },
+
+        drawWave(ctx, width, height, data, centerY, amplitude, color, lineWidth) {
+            const sliceWidth = width / data.length;
+
+            ctx.save();
+
+            // Apply glow
+            VisualizerRenderers.BaseRenderer.applyGlow(ctx, color, 25);
+
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+
+            let x = 0;
+            for (let i = 0; i < data.length; i++) {
+                const v = data[i] / 128.0;
+                const y = centerY + ((v - 1) * (height / 2) * amplitude);
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    // Use quadratic curves for smoothness
+                    const prevX = x - sliceWidth;
+                    const prevV = data[i - 1] / 128.0;
+                    const prevY = centerY + ((prevV - 1) * (height / 2) * amplitude);
+                    const cpX = (prevX + x) / 2;
+                    const cpY = (prevY + y) / 2;
+                    ctx.quadraticCurveTo(prevX, prevY, cpX, cpY);
+                }
+
+                x += sliceWidth;
+            }
+
+            ctx.stroke();
+
+            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
+            ctx.restore();
+        }
+    }
+};
+
+// ===== MAIN VISUALIZER FUNCTION =====
 function drawVisualizer() {
     if (!state.isPlaying) {
         const ctx = visualizerCanvas.getContext('2d');
@@ -75,37 +325,126 @@ function drawVisualizer() {
 
     animationId = requestAnimationFrame(drawVisualizer);
 
+    // Get frequency data
     analyser.getByteFrequencyData(dataArray);
+
+    // Apply smoothing for fluid animation
+    const smoothedData = VisualizerRenderers.BaseRenderer.interpolateData(
+        dataArray,
+        state.previousDataArray,
+        state.smoothingFactor
+    );
+    state.previousDataArray = new Uint8Array(smoothedData);
 
     const ctx = visualizerCanvas.getContext('2d');
     const width = visualizerCanvas.width;
     const height = visualizerCanvas.height;
 
-    ctx.clearRect(0, 0, width, height);
+    // Clear canvas with fade effect
+    ctx.fillStyle = `rgba(10, 14, 39, ${1 - state.visualizerOpacity})`;
+    ctx.fillRect(0, 0, width, height);
 
-    const barWidth = (width / bufferLength) * 2.5;
-    let barHeight;
-    let x = 0;
+    // Apply global opacity for transitions
+    ctx.save();
+    ctx.globalAlpha = state.visualizerOpacity;
 
-    for (let i = 0; i < bufferLength; i++) {
-        barHeight = (dataArray[i] / 255) * height * 0.8;
-
-        const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
-        gradient.addColorStop(0, '#6c5ce7');
-        gradient.addColorStop(0.5, '#00d4ff');
-        gradient.addColorStop(1, '#6c5ce7');
-
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight);
-
-        x += barWidth + 1;
+    // Render using selected style
+    const renderer = VisualizerRenderers[state.visualizerStyle];
+    if (renderer && renderer.render) {
+        renderer.render(ctx, width, height, dataArray, smoothedData);
     }
+
+    ctx.restore();
 }
 
+// ===== VISUALIZER STYLE SWITCHING =====
+function switchVisualizerStyle(newStyle) {
+    if (state.visualizerStyle === newStyle) return;
+
+    // Fade out current style
+    fadeVisualizerTransition(() => {
+        state.visualizerStyle = newStyle;
+        localStorage.setItem('visualizerStyle', newStyle);
+
+        // Clear gradient cache when switching to avoid artifacts
+        VisualizerRenderers.gradientCache = {};
+
+        // Update UI
+        updateVisualizerButtons();
+    });
+}
+
+function fadeVisualizerTransition(callback) {
+    const fadeOutDuration = 300; // ms
+    const startTime = performance.now();
+    const initialOpacity = state.visualizerOpacity;
+
+    function fadeOut(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / fadeOutDuration, 1);
+
+        state.visualizerOpacity = initialOpacity * (1 - progress);
+
+        if (progress < 1) {
+            requestAnimationFrame(fadeOut);
+        } else {
+            // Switch style at lowest opacity
+            callback();
+            // Fade back in
+            fadeIn();
+        }
+    }
+
+    function fadeIn() {
+        const fadeInDuration = 300;
+        const startTime = performance.now();
+
+        function animate(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / fadeInDuration, 1);
+
+            state.visualizerOpacity = progress;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(fadeOut);
+}
+
+function updateVisualizerButtons() {
+    document.querySelectorAll('.visualizer-style-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.style === state.visualizerStyle);
+    });
+}
+
+// Debounced resize for better performance
+let resizeTimeout;
 function resizeCanvas() {
-    const container = visualizerCanvas.parentElement;
-    visualizerCanvas.width = container.offsetWidth;
-    visualizerCanvas.height = container.offsetHeight;
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        const container = visualizerCanvas.parentElement;
+        const dpr = window.devicePixelRatio || 1;
+
+        // Set display size
+        visualizerCanvas.style.width = container.offsetWidth + 'px';
+        visualizerCanvas.style.height = container.offsetHeight + 'px';
+
+        // Set actual size in memory (scaled for retina displays)
+        visualizerCanvas.width = container.offsetWidth * dpr;
+        visualizerCanvas.height = container.offsetHeight * dpr;
+
+        // Scale context to match device pixel ratio
+        const ctx = visualizerCanvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+
+        // Clear gradient cache on resize
+        VisualizerRenderers.gradientCache = {};
+    }, 150);
 }
 
 // ===== PLAYLIST FUNCTIONS =====
@@ -645,6 +984,19 @@ document.addEventListener('keydown', (e) => {
 
 // Window resize for canvas
 window.addEventListener('resize', resizeCanvas);
+
+// Visualizer style button event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Add click handlers to visualizer style buttons
+    document.querySelectorAll('.visualizer-style-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchVisualizerStyle(btn.dataset.style);
+        });
+    });
+
+    // Initialize button states based on saved preference
+    updateVisualizerButtons();
+});
 
 // ===== INITIALIZATION =====
 function init() {

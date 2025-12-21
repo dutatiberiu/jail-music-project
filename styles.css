@@ -137,6 +137,51 @@ body {
     opacity: 0.9;
 }
 
+/* ===== VISUALIZER STYLE CONTROLS ===== */
+.visualizer-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.visualizer-style-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(10, 14, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(108, 92, 231, 0.4);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #a0a0a0;
+}
+
+.visualizer-style-btn:hover {
+    background: rgba(108, 92, 231, 0.3);
+    border-color: #6c5ce7;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    color: #e0e0e0;
+}
+
+.visualizer-style-btn.active {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.6), rgba(0, 212, 255, 0.4));
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+    color: #ffffff;
+}
+
+.visualizer-style-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
 /* ===== CONTROLS ===== */
 .controls {
     display: flex;
@@ -602,6 +647,22 @@ body {
 
     .playlist {
         padding: 20px;
+    }
+
+    .visualizer-controls {
+        top: 10px;
+        right: 10px;
+        gap: 6px;
+    }
+
+    .visualizer-style-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .visualizer-style-btn svg {
+        width: 18px;
+        height: 18px;
     }
 }
 
