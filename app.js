@@ -115,69 +115,32 @@ const VisualizerRenderers = {
         }
     },
 
-    // Enhanced Bars Renderer
+    // Enhanced Bars Renderer - Simple vertical bars
     'enhanced-bars': {
         render(ctx, width, height, dataArray, smoothedData) {
             const barCount = bufferLength;
             const barWidth = (width / barCount) * 2.5;
             const gap = 1;
-
-            // Draw reflection first (below main bars)
-            this.drawReflection(ctx, width, height, smoothedData, barWidth, gap);
-
-            // Draw main bars with glow
-            this.drawBars(ctx, width, height, smoothedData, barWidth, gap);
-        },
-
-        drawBars(ctx, width, height, data, barWidth, gap) {
-            const midHeight = height * 0.5;
             let x = 0;
 
-            // Create gradient once for all bars
-            const gradient = VisualizerRenderers.BaseRenderer.getGradient(
-                ctx, 'bars', 0, midHeight, 0, height
-            );
+            // Simple gradient from bottom to top
+            const gradient = ctx.createLinearGradient(0, height, 0, 0);
+            gradient.addColorStop(0, '#6c5ce7');
+            gradient.addColorStop(0.5, '#00d4ff');
+            gradient.addColorStop(1, '#6c5ce7');
 
-            for (let i = 0; i < data.length; i++) {
-                const barHeight = (data[i] / 255) * midHeight * 0.9;
-
-                // Apply glow effect
-                VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#6c5ce7', 20);
+            for (let i = 0; i < smoothedData.length; i++) {
+                const barHeight = (smoothedData[i] / 255) * height * 0.8;
 
                 ctx.fillStyle = gradient;
-                ctx.fillRect(x, height - barHeight - midHeight, barWidth, barHeight);
+                ctx.fillRect(x, height - barHeight, barWidth - gap, barHeight);
 
-                x += barWidth + gap;
+                x += barWidth;
             }
-
-            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
-        },
-
-        drawReflection(ctx, width, height, data, barWidth, gap) {
-            const midHeight = height * 0.5;
-            let x = 0;
-
-            ctx.save();
-            ctx.globalAlpha = 0.3;
-
-            const reflectionGradient = ctx.createLinearGradient(0, midHeight, 0, height);
-            reflectionGradient.addColorStop(0, 'rgba(108, 92, 231, 0.6)');
-            reflectionGradient.addColorStop(1, 'rgba(0, 212, 255, 0.2)');
-
-            for (let i = 0; i < data.length; i++) {
-                const barHeight = (data[i] / 255) * midHeight * 0.5;
-
-                ctx.fillStyle = reflectionGradient;
-                ctx.fillRect(x, midHeight, barWidth, barHeight);
-
-                x += barWidth + gap;
-            }
-
-            ctx.restore();
         }
     },
 
-    // Circular/Radial Renderer
+    // Circular/Radial Renderer - No glow
     'circular': {
         render(ctx, width, height, dataArray, smoothedData) {
             const centerX = width / 2;
@@ -185,9 +148,6 @@ const VisualizerRenderers = {
             const maxDimension = Math.min(width, height);
             const radius = maxDimension * 0.3;
             const maxBarHeight = maxDimension * 0.25;
-
-            // Draw glow ring
-            this.drawGlowRing(ctx, centerX, centerY, radius);
 
             // Draw radial bars
             this.drawRadialBars(ctx, centerX, centerY, radius, maxBarHeight, smoothedData);
@@ -214,9 +174,6 @@ const VisualizerRenderers = {
                 gradient.addColorStop(0, '#6c5ce7');
                 gradient.addColorStop(1, '#00d4ff');
 
-                // Apply glow
-                VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#00d4ff', 15);
-
                 ctx.strokeStyle = gradient;
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -224,21 +181,6 @@ const VisualizerRenderers = {
                 ctx.lineTo(outerX, outerY);
                 ctx.stroke();
             }
-
-            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
-        },
-
-        drawGlowRing(ctx, centerX, centerY, radius) {
-            ctx.save();
-            VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#6c5ce7', 30);
-
-            ctx.strokeStyle = 'rgba(108, 92, 231, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.restore();
         },
 
         drawCenterCircle(ctx, centerX, centerY, radius) {
@@ -249,14 +191,10 @@ const VisualizerRenderers = {
             gradient.addColorStop(0, '#00d4ff');
             gradient.addColorStop(1, '#6c5ce7');
 
-            VisualizerRenderers.BaseRenderer.applyGlow(ctx, '#00d4ff', 20);
-
             ctx.fillStyle = gradient;
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
             ctx.fill();
-
-            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
         }
     },
 
@@ -280,8 +218,8 @@ const VisualizerRenderers = {
 
             ctx.save();
 
-            // Apply glow
-            VisualizerRenderers.BaseRenderer.applyGlow(ctx, color, 25);
+            // Apply subtle glow
+            VisualizerRenderers.BaseRenderer.applyGlow(ctx, color, 5);
 
             ctx.lineWidth = lineWidth;
             ctx.strokeStyle = color;
@@ -724,6 +662,9 @@ function loadSong(index) {
 
     songTitle.textContent = title;
     songArtist.textContent = song.artistName || artist;
+
+    // Reset visualizer animation when changing song
+    state.previousDataArray = null;
 
     renderPlaylist();
 }
