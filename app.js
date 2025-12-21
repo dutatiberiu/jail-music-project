@@ -19,8 +19,6 @@ const state = {
     shuffleHistory: [],
     // Visualizer state
     visualizerStyle: localStorage.getItem('visualizerStyle') || 'enhanced-bars',
-    smoothingFactor: 0.75,
-    previousDataArray: null,
     visualizerOpacity: 1
 };
 
@@ -65,12 +63,10 @@ function setupAudioContext() {
         source.connect(analyser);
         analyser.connect(audioContext.destination);
 
-        // Increased FFT size for better frequency resolution
-        analyser.fftSize = 512; // Changed from 256
-        // Smoothing for more fluid visualization
-        analyser.smoothingTimeConstant = 0.7;
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8; // Default value - minimal smoothing
 
-        bufferLength = analyser.frequencyBinCount; // Now 256
+        bufferLength = analyser.frequencyBinCount; // 128
         dataArray = new Uint8Array(bufferLength);
     }
 }
@@ -115,140 +111,314 @@ const VisualizerRenderers = {
         }
     },
 
-    // Enhanced Bars Renderer - Simple vertical bars
+    // Enhanced Bars Renderer - Original simple bars
     'enhanced-bars': {
-        render(ctx, width, height, dataArray, smoothedData) {
-            const barCount = bufferLength;
+        render(ctx, width, height, dataArray) {
+            const barCount = dataArray.length;
             const barWidth = (width / barCount) * 2.5;
-            const gap = 1;
             let x = 0;
 
-            // Simple gradient from bottom to top
-            const gradient = ctx.createLinearGradient(0, height, 0, 0);
-            gradient.addColorStop(0, '#6c5ce7');
-            gradient.addColorStop(0.5, '#00d4ff');
-            gradient.addColorStop(1, '#6c5ce7');
+            for (let i = 0; i < barCount; i++) {
+                const barHeight = (dataArray[i] / 255) * height;
 
-            for (let i = 0; i < smoothedData.length; i++) {
-                const barHeight = (smoothedData[i] / 255) * height * 0.8;
+                const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
+                gradient.addColorStop(0, '#6c5ce7');
+                gradient.addColorStop(0.5, '#00d4ff');
+                gradient.addColorStop(1, '#6c5ce7');
 
                 ctx.fillStyle = gradient;
-                ctx.fillRect(x, height - barHeight, barWidth - gap, barHeight);
+                ctx.fillRect(x, height - barHeight, barWidth - 2, barHeight);
 
                 x += barWidth;
             }
         }
     },
 
-    // Circular/Radial Renderer - No glow
+    // Starfield + Waveform Renderer (Audio Visualization III)
     'circular': {
-        render(ctx, width, height, dataArray, smoothedData) {
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const maxDimension = Math.min(width, height);
-            const radius = maxDimension * 0.3;
-            const maxBarHeight = maxDimension * 0.25;
+        stars: [],
+        points: [],
+        rotation: 0,
+        avgCircleRadius: 0,
+        initialized: false,
+        TOTAL_STARS: 800,
+        STARS_BREAK_POINT: 140,
+        AVG_BREAK_POINT: 100,
 
-            // Draw radial bars
-            this.drawRadialBars(ctx, centerX, centerY, radius, maxBarHeight, smoothedData);
+        init(width, height) {
+            if (this.initialized) return;
 
-            // Draw center circle
-            this.drawCenterCircle(ctx, centerX, centerY, radius * 0.3);
+            const cx = width / 2;
+            const cy = height / 2;
+            const TOTAL_POINTS = bufferLength / 2;
+
+            // Create stars
+            this.stars = [];
+            for (let i = 0; i < this.TOTAL_STARS; i++) {
+                this.stars.push(this.createStar(width, height, cx, cy));
+            }
+
+            // Create waveform points
+            this.points = [];
+            for (let i = 0; i < TOTAL_POINTS; i++) {
+                const angle = (i * 360) / TOTAL_POINTS;
+                const radius = Math.min(width, height) / 10;
+                this.points.push({
+                    index: i,
+                    angle: angle,
+                    radius: radius,
+                    x: cx + radius * Math.sin(Math.PI / 180 * angle),
+                    y: cy + radius * Math.cos(Math.PI / 180 * angle),
+                    dx: 0,
+                    dy: 0
+                });
+            }
+
+            this.avgCircleRadius = Math.min(width, height) / 10;
+            this.initialized = true;
         },
 
-        drawRadialBars(ctx, centerX, centerY, innerRadius, maxBarHeight, data) {
-            const barCount = data.length;
-            const angleStep = (Math.PI * 2) / barCount;
+        createStar(w, h, cx, cy) {
+            const x = Math.random() * w - cx;
+            const y = Math.random() * h - cy;
+            const xc = x > 0 ? 1 : -1;
+            const yc = y > 0 ? 1 : -1;
 
-            for (let i = 0; i < barCount; i++) {
-                const angle = i * angleStep - Math.PI / 2;
-                const barHeight = (data[i] / 255) * maxBarHeight;
+            let dx, dy;
+            if (Math.abs(x) > Math.abs(y)) {
+                dx = 1.0;
+                dy = Math.abs(y / x);
+            } else {
+                dx = Math.abs(x / y);
+                dy = 1.0;
+            }
 
-                const innerX = centerX + Math.cos(angle) * innerRadius;
-                const innerY = centerY + Math.sin(angle) * innerRadius;
-                const outerX = centerX + Math.cos(angle) * (innerRadius + barHeight);
-                const outerY = centerY + Math.sin(angle) * (innerRadius + barHeight);
+            return {
+                x, y,
+                z: Math.max(w/h),
+                max_depth: Math.max(w/h),
+                radius: 0.2,
+                dx: dx * xc,
+                dy: dy * yc,
+                dz: -0.1,
+                ddx: 0.001 * dx * xc,
+                ddy: 0.001 * dy * yc,
+                color: y > (cy/2) ? 'rgba(181, 191, 212, 0.8)' : 'rgba(108, 92, 231, 0.6)'
+            };
+        },
 
-                // Create gradient for this bar
-                const gradient = ctx.createLinearGradient(innerX, innerY, outerX, outerY);
-                gradient.addColorStop(0, '#6c5ce7');
-                gradient.addColorStop(1, '#00d4ff');
+        render(ctx, width, height, dataArray) {
+            if (!this.initialized) this.init(width, height);
 
-                ctx.strokeStyle = gradient;
-                ctx.lineWidth = 3;
+            const cx = width / 2;
+            const cy = height / 2;
+
+            // Get frequency data and calculate average
+            const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            const AVG_BREAK_POINT_HIT = avg > this.AVG_BREAK_POINT;
+
+            // Draw starfield
+            this.drawStarField(ctx, width, height, cx, cy, avg, AVG_BREAK_POINT_HIT);
+
+            // Draw average circle
+            this.drawAverageCircle(ctx, cx, cy, avg, AVG_BREAK_POINT_HIT);
+
+            // Draw waveform (using time domain data)
+            const timeData = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(timeData);
+            this.drawWaveform(ctx, cx, cy, timeData, AVG_BREAK_POINT_HIT);
+        },
+
+        drawStarField(ctx, w, h, cx, cy, avg, hitBreakpoint) {
+            for (let i = 0; i < this.stars.length; i++) {
+                const p = this.stars[i];
+                const tick = hitBreakpoint ? (avg/20) : (avg/50);
+
+                p.x += p.dx * tick;
+                p.y += p.dy * tick;
+                p.z += p.dz;
+                p.dx += p.ddx;
+                p.dy += p.ddy;
+                p.radius = 0.2 + ((p.max_depth - p.z) * 0.1);
+
+                if (p.x < -cx || p.x > cx || p.y < -cy || p.y > cy) {
+                    this.stars[i] = this.createStar(w, h, cx, cy);
+                    continue;
+                }
+
                 ctx.beginPath();
-                ctx.moveTo(innerX, innerY);
-                ctx.lineTo(outerX, outerY);
-                ctx.stroke();
+                ctx.globalCompositeOperation = "lighter";
+                ctx.fillStyle = hitBreakpoint ? 'rgba(0, 212, 255, 0.9)' : p.color;
+                ctx.arc(p.x + cx, p.y + cy, p.radius, 0, Math.PI * 2, false);
+                ctx.fill();
+                ctx.closePath();
             }
         },
 
-        drawCenterCircle(ctx, centerX, centerY, radius) {
-            const gradient = ctx.createRadialGradient(
-                centerX, centerY, 0,
-                centerX, centerY, radius
-            );
-            gradient.addColorStop(0, '#00d4ff');
-            gradient.addColorStop(1, '#6c5ce7');
+        drawAverageCircle(ctx, cx, cy, avg, hitBreakpoint) {
+            ctx.strokeStyle = hitBreakpoint ? 'rgba(0, 212, 255, 1)' : 'rgba(108, 92, 231, 0.8)';
+            ctx.fillStyle = hitBreakpoint ? 'rgba(0, 212, 255, 0.05)' : 'rgba(108, 92, 231, 0.1)';
+            ctx.lineWidth = 1;
 
-            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.arc(cx, cy, avg + this.avgCircleRadius, 0, Math.PI * 2, false);
+            ctx.stroke();
             ctx.fill();
+            ctx.closePath();
+        },
+
+        drawWaveform(ctx, cx, cy, timeData, hitBreakpoint) {
+            const waveformTick = 0.05;
+            this.rotation += hitBreakpoint ? waveformTick : -waveformTick;
+
+            ctx.strokeStyle = hitBreakpoint ? 'rgba(0, 212, 255, 0.8)' : 'rgba(108, 92, 231, 0.4)';
+            ctx.fillStyle = hitBreakpoint ? 'rgba(0, 0, 0, 0)' : 'rgba(108, 92, 231, 0.05)';
+            ctx.lineWidth = 1;
+            ctx.lineCap = "round";
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(this.rotation);
+            ctx.translate(-cx, -cy);
+
+            ctx.beginPath();
+            const TOTAL_POINTS = this.points.length;
+
+            for (let i = 0; i < TOTAL_POINTS; i++) {
+                const p = this.points[i];
+                const value = timeData[i] || 0;
+                p.dx = p.x + value * Math.sin(Math.PI / 180 * p.angle);
+                p.dy = p.y + value * Math.cos(Math.PI / 180 * p.angle);
+
+                if (i === 0) {
+                    ctx.moveTo(p.dx, p.dy);
+                } else {
+                    const xc = (p.dx + this.points[i-1].dx) / 2;
+                    const yc = (p.dy + this.points[i-1].dy) / 2;
+                    ctx.quadraticCurveTo(this.points[i-1].dx, this.points[i-1].dy, xc, yc);
+                }
+            }
+
+            // Close the path back to first point
+            const last = this.points[TOTAL_POINTS - 1];
+            const first = this.points[0];
+            const xc = (last.dx + first.dx) / 2;
+            const yc = (last.dy + first.dy) / 2;
+            ctx.quadraticCurveTo(last.dx, last.dy, xc, yc);
+            ctx.quadraticCurveTo(xc, yc, first.dx, first.dy);
+
+            ctx.stroke();
+            ctx.fill();
+            ctx.restore();
+            ctx.closePath();
         }
     },
 
-    // Waveform Renderer
+    // Reactive Waves Renderer (Simplified Shader Style)
     'waveform': {
-        render(ctx, width, height, dataArray, smoothedData) {
-            // Use time domain data for waveform
-            analyser.getByteTimeDomainData(dataArray);
+        time: 0,
+        bassEnergy: 0,
+        midEnergy: 0,
+        highEnergy: 0,
+        kickDetected: false,
+        kickEnergy: 0,
+
+        render(ctx, width, height, dataArray) {
+            this.time += 0.02;
+
+            // Split frequency data into bands
+            const third = Math.floor(dataArray.length / 3);
+            const bassData = dataArray.slice(0, third);
+            const midData = dataArray.slice(third, third * 2);
+            const highData = dataArray.slice(third * 2);
+
+            // Calculate average energy for each band (0-1)
+            const bass = this.getAverage(bassData) / 255;
+            const mid = this.getAverage(midData) / 255;
+            const high = this.getAverage(highData) / 255;
+
+            // Smooth energy values
+            this.bassEnergy = this.bassEnergy * 0.7 + bass * 0.3;
+            this.midEnergy = this.midEnergy * 0.7 + mid * 0.3;
+            this.highEnergy = this.highEnergy * 0.7 + high * 0.3;
+
+            // Simple kick detection (bass spike)
+            if (bass > 0.6 && !this.kickDetected) {
+                this.kickDetected = true;
+                this.kickEnergy = 1.0;
+            } else {
+                this.kickEnergy *= 0.9;
+                if (this.kickEnergy < 0.1) {
+                    this.kickDetected = false;
+                }
+            }
 
             const centerY = height / 2;
 
-            // Draw main waveform with glow
-            this.drawWave(ctx, width, height, dataArray, centerY, 1.0, '#00d4ff', 3);
+            // Draw background gradient
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, height);
+            bgGradient.addColorStop(0, 'rgba(10, 14, 39, 0.3)');
+            bgGradient.addColorStop(1, 'rgba(20, 10, 30, 0.3)');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, width, height);
 
-            // Draw secondary waveform (mirrored)
-            this.drawWave(ctx, width, height, dataArray, centerY, 0.6, '#6c5ce7', 2);
+            // Draw three reactive waves
+            this.drawReactiveWave(ctx, width, height, centerY, this.bassEnergy, this.kickEnergy, 1, '#6c5ce7', 3);
+            this.drawReactiveWave(ctx, width, height, centerY, this.midEnergy, this.kickEnergy, 2, '#00d4ff', 2.5);
+            this.drawReactiveWave(ctx, width, height, centerY, this.highEnergy, this.kickEnergy, 3, '#9d7ce8', 2);
         },
 
-        drawWave(ctx, width, height, data, centerY, amplitude, color, lineWidth) {
-            const sliceWidth = width / data.length;
+        drawReactiveWave(ctx, width, height, centerY, energy, kickEnergy, waveNum, color, lineWidth) {
+            const points = 100;
+            const amplitude = height * 0.15 * (0.5 + energy * 2); // Energy affects amplitude
+            const frequency = 2 + waveNum * 0.5;
+            const speed = this.time * (1 + energy);
+            const offset = waveNum * 0.3; // Different phase for each wave
 
             ctx.save();
-
-            // Apply subtle glow
-            VisualizerRenderers.BaseRenderer.applyGlow(ctx, color, 5);
-
-            ctx.lineWidth = lineWidth;
             ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth * (1 + kickEnergy * 0.5); // Thicker on kick
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Add glow on kick
+            if (kickEnergy > 0.2) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10 * kickEnergy;
+            }
+
             ctx.beginPath();
 
-            let x = 0;
-            for (let i = 0; i < data.length; i++) {
-                const v = data[i] / 128.0;
-                const y = centerY + ((v - 1) * (height / 2) * amplitude);
+            for (let i = 0; i <= points; i++) {
+                const x = (i / points) * width;
+                const progress = i / points;
+
+                // Main sine wave
+                let y = centerY + Math.sin((progress * frequency * Math.PI * 2) + speed + offset) * amplitude;
+
+                // Add complexity with secondary wave
+                y += Math.sin((progress * frequency * 4 * Math.PI) - speed * 2) * amplitude * 0.3 * energy;
+
+                // Add kick bounce effect
+                if (kickEnergy > 0.1) {
+                    y += Math.sin(progress * Math.PI) * kickEnergy * 15 * (waveNum === 1 ? 1 : 0.5);
+                }
 
                 if (i === 0) {
                     ctx.moveTo(x, y);
                 } else {
-                    // Use quadratic curves for smoothness
-                    const prevX = x - sliceWidth;
-                    const prevV = data[i - 1] / 128.0;
-                    const prevY = centerY + ((prevV - 1) * (height / 2) * amplitude);
-                    const cpX = (prevX + x) / 2;
-                    const cpY = (prevY + y) / 2;
-                    ctx.quadraticCurveTo(prevX, prevY, cpX, cpY);
+                    ctx.lineTo(x, y);
                 }
-
-                x += sliceWidth;
             }
 
             ctx.stroke();
-
-            VisualizerRenderers.BaseRenderer.clearGlow(ctx);
             ctx.restore();
+        },
+
+        getAverage(array) {
+            if (array.length === 0) return 0;
+            const sum = array.reduce((a, b) => a + b, 0);
+            return sum / array.length;
         }
     }
 };
@@ -263,23 +433,16 @@ function drawVisualizer() {
 
     animationId = requestAnimationFrame(drawVisualizer);
 
-    // Get frequency data
     analyser.getByteFrequencyData(dataArray);
 
-    // Apply smoothing for fluid animation
-    const smoothedData = VisualizerRenderers.BaseRenderer.interpolateData(
-        dataArray,
-        state.previousDataArray,
-        state.smoothingFactor
-    );
-    state.previousDataArray = new Uint8Array(smoothedData);
-
     const ctx = visualizerCanvas.getContext('2d');
-    const width = visualizerCanvas.width;
-    const height = visualizerCanvas.height;
+    const container = visualizerCanvas.parentElement;
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
 
-    // Clear canvas with fade effect
-    ctx.fillStyle = `rgba(10, 14, 39, ${1 - state.visualizerOpacity})`;
+    // Clear canvas completely for instant response
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = 'rgb(10, 14, 39)';
     ctx.fillRect(0, 0, width, height);
 
     // Apply global opacity for transitions
@@ -289,7 +452,7 @@ function drawVisualizer() {
     // Render using selected style
     const renderer = VisualizerRenderers[state.visualizerStyle];
     if (renderer && renderer.render) {
-        renderer.render(ctx, width, height, dataArray, smoothedData);
+        renderer.render(ctx, width, height, dataArray, dataArray);
     }
 
     ctx.restore();
@@ -306,6 +469,11 @@ function switchVisualizerStyle(newStyle) {
 
         // Clear gradient cache when switching to avoid artifacts
         VisualizerRenderers.gradientCache = {};
+
+        // Reset starfield initialization when switching to it
+        if (newStyle === 'circular' && VisualizerRenderers.circular) {
+            VisualizerRenderers.circular.initialized = false;
+        }
 
         // Update UI
         updateVisualizerButtons();
@@ -382,6 +550,11 @@ function resizeCanvas() {
 
         // Clear gradient cache on resize
         VisualizerRenderers.gradientCache = {};
+
+        // Reset starfield initialization on resize
+        if (VisualizerRenderers.circular) {
+            VisualizerRenderers.circular.initialized = false;
+        }
     }, 150);
 }
 
@@ -662,9 +835,6 @@ function loadSong(index) {
 
     songTitle.textContent = title;
     songArtist.textContent = song.artistName || artist;
-
-    // Reset visualizer animation when changing song
-    state.previousDataArray = null;
 
     renderPlaylist();
 }
