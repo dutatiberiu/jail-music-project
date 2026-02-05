@@ -42,6 +42,8 @@ const songArtist = document.getElementById('songArtist');
 const playlistItems = document.getElementById('playlistItems');
 const searchInput = document.getElementById('searchInput');
 const visualizerCanvas = document.getElementById('visualizer');
+const visualizerContainer = document.querySelector('.visualizer-container');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
 
 // NEW: Tab elements
 const artistsPanel = document.getElementById('artists-panel');
@@ -437,8 +439,16 @@ function drawVisualizer() {
 
     const ctx = visualizerCanvas.getContext('2d');
     const container = visualizerCanvas.parentElement;
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
+
+    // Use window dimensions if in fullscreen, otherwise use container
+    let width, height;
+    if (document.fullscreenElement === container) {
+        width = window.innerWidth;
+        height = window.innerHeight;
+    } else {
+        width = container.offsetWidth;
+        height = container.offsetHeight;
+    }
 
     // Clear canvas completely for instant response
     ctx.clearRect(0, 0, width, height);
@@ -528,21 +538,34 @@ function updateVisualizerButtons() {
     });
 }
 
-// Debounced resize for better performance
+// Resize canvas function
 let resizeTimeout;
-function resizeCanvas() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
+function resizeCanvas(immediate = false) {
+    const doResize = () => {
         const container = visualizerCanvas.parentElement;
         const dpr = window.devicePixelRatio || 1;
+        const isFullscreen = document.fullscreenElement === container;
 
-        // Set display size
-        visualizerCanvas.style.width = container.offsetWidth + 'px';
-        visualizerCanvas.style.height = container.offsetHeight + 'px';
+        // Get dimensions - use window size if in fullscreen
+        let width, height;
+        if (isFullscreen) {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            // Set explicit dimensions for fullscreen
+            visualizerCanvas.style.width = width + 'px';
+            visualizerCanvas.style.height = height + 'px';
+        } else {
+            // Clear inline styles so CSS takes over
+            visualizerCanvas.style.width = '';
+            visualizerCanvas.style.height = '';
+            // Get actual container dimensions
+            width = container.offsetWidth;
+            height = container.offsetHeight;
+        }
 
         // Set actual size in memory (scaled for retina displays)
-        visualizerCanvas.width = container.offsetWidth * dpr;
-        visualizerCanvas.height = container.offsetHeight * dpr;
+        visualizerCanvas.width = width * dpr;
+        visualizerCanvas.height = height * dpr;
 
         // Scale context to match device pixel ratio
         const ctx = visualizerCanvas.getContext('2d');
@@ -555,7 +578,15 @@ function resizeCanvas() {
         if (VisualizerRenderers.circular) {
             VisualizerRenderers.circular.initialized = false;
         }
-    }, 150);
+    };
+
+    if (immediate) {
+        clearTimeout(resizeTimeout);
+        doResize();
+    } else {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(doResize, 150);
+    }
 }
 
 // ===== PLAYLIST FUNCTIONS =====
@@ -1095,6 +1126,40 @@ document.addEventListener('keydown', (e) => {
 
 // Window resize for canvas
 window.addEventListener('resize', resizeCanvas);
+
+// Fullscreen toggle
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        visualizerContainer.requestFullscreen().catch(err => {
+            console.error('Error entering fullscreen:', err);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function updateFullscreenButton() {
+    const fullscreenIcon = fullscreenBtn.querySelector('.fullscreen-icon');
+    const exitIcon = fullscreenBtn.querySelector('.exit-fullscreen-icon');
+
+    if (document.fullscreenElement) {
+        fullscreenIcon.classList.add('hidden');
+        exitIcon.classList.remove('hidden');
+    } else {
+        fullscreenIcon.classList.remove('hidden');
+        exitIcon.classList.add('hidden');
+    }
+}
+
+document.addEventListener('fullscreenchange', () => {
+    updateFullscreenButton();
+    // Resize canvas immediately when entering/exiting fullscreen
+    resizeCanvas(true);
+    // Do another resize after a short delay to ensure proper dimensions
+    setTimeout(() => resizeCanvas(true), 100);
+});
 
 // Visualizer style button event listeners
 document.addEventListener('DOMContentLoaded', () => {

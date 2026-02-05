@@ -182,6 +182,78 @@ body {
     height: 20px;
 }
 
+.visualizer-style-btn .hidden {
+    display: none;
+}
+
+/* Fullscreen Button */
+.fullscreen-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(10, 14, 39, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(108, 92, 231, 0.4);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #a0a0a0;
+    z-index: 10;
+}
+
+.fullscreen-btn:hover {
+    background: rgba(108, 92, 231, 0.3);
+    border-color: #6c5ce7;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    color: #e0e0e0;
+}
+
+.fullscreen-btn .hidden {
+    display: none;
+}
+
+/* Fullscreen styles */
+.visualizer-container:fullscreen {
+    background: #0a0e27;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0;
+    border: none;
+}
+
+.visualizer-container:fullscreen #visualizer {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.visualizer-container:fullscreen .visualizer-controls {
+    top: 20px;
+    right: 20px;
+}
+
+.visualizer-container:fullscreen .fullscreen-btn {
+    bottom: 20px;
+    right: 20px;
+}
+
+.visualizer-container:fullscreen .now-playing {
+    padding: 50px;
+}
+
+.visualizer-container:fullscreen .song-title {
+    font-size: 42px;
+}
+
+.visualizer-container:fullscreen .song-artist {
+    font-size: 24px;
+}
+
 /* ===== CONTROLS ===== */
 .controls {
     display: flex;
@@ -403,13 +475,11 @@ body {
     display: flex;
     align-items: center;
     padding: 0 15px 15px 15px;
-    background: rgba(10, 14, 39, 0.4);
-    border-bottom: 1px solid rgba(108, 92, 231, 0.2);
 }
 
 .search-container svg {
     position: absolute;
-    left: 15px;
+    left: 28px;
     color: #6c5ce7;
     pointer-events: none;
 }

@@ -139,12 +139,12 @@
               "songs": [
                 "EMAA - 29.mp3",
                 "EMAA - Eros & Thanathos.mp3",
-                "EMAA - Iarna preferat.mp3",
+                "EMAA - Iarna preferata.mp3",
                 "EMAA - In numele binelui.mp3",
                 "EMAA - Macii Infloresc Iarna.mp3",
                 "EMAA - Odata cu tine.mp3",
                 "EMAA - Rosu stins.mp3",
-                "EMAA - Sufletu Imun.mp3",
+                "EMAA - Sufletu' Imun.mp3",
                 "EMAA - Supra EU.mp3",
                 "EMAA - Universul rar.mp3",
                 "EMAA - Zburatorul.mp3"
@@ -278,6 +278,32 @@
                 "Maria Raducanu - Sus în poarta Raiului.mp3",
                 "Maria Raducanu - Trei Crai De La Răsărit.mp3",
                 "Maria Raducanu - Trei lămâi şi trei gutui.mp3"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mădălina Pavăl",
+          "id": "tiberiu-mădălina-pavăl",
+          "albums": [
+            {
+              "name": "Mădălina Pavăl",
+              "id": "tiberiu-mădălina-pavăl-mădălina-pavăl",
+              "path": "Tiberiu/Mădălina Pavăl",
+              "songs": [
+                "Madalina Paval - 100 de ploi.mp3",
+                "Madalina Paval - Cată-ți, dorule, alt loc!.mp3",
+                "Madalina Paval - Duilala.mp3",
+                "Madalina Paval - Fată de Împărat.mp3",
+                "Madalina Paval - Ieși, Soare!.mp3",
+                "Madalina Paval - Lumina și Dorul.mp3",
+                "Madalina Paval - Lună.mp3",
+                "Madalina Paval - Nu ai nume.mp3",
+                "Madalina Paval - Ochi de prune.mp3",
+                "Madalina Paval - Soartă mută.mp3",
+                "Madalina Paval - Tot de dor.mp3",
+                "Madalina Paval - Tu știi ce știi.mp3",
+                "Madalina Paval - Uda.mp3"
               ]
             }
           ]
