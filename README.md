@@ -1,6 +1,6 @@
 # 🎵 Jail Music Project
 
-LIVE ---> https://dutatiberiu.github.io/jail-music-project/
+LIVE ---> https://dutatiberiu.github.io/lowKey-Player/
 
 Un music player web modern și elegant, optimizat pentru rulare pe GitHub Pages. Perfect pentru ascultarea muzicii locale fara dependete de alte platforme audio. 
 
