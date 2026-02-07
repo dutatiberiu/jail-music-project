@@ -1,4 +1,4 @@
-# 🎵 Jail Music Project
+# 🎵 lowKey Player
 
 LIVE ---> https://dutatiberiu.github.io/lowKey-Player/
 
